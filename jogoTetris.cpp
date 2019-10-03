@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ncurses.h>
 #include <unistd.h>
+#include "Menu.cpp"
 #include "Tetris.h"
 
 using namespace std;
@@ -22,8 +23,7 @@ void exibeJogo(const Tetris &jogoComPecaCaindo,int larguraJogo,int alturaMaximaJ
 	}
 }
 
-int main() {
-
+int main(int argc, char** argv) {
 
 	//Observacoes: jogo implementado sem muitos cuidados!
 	//Exemplo: o tempo de espera entre cada iteracao depende ligeiramente do tempo que o programa gasta
