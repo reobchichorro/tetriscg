@@ -35,7 +35,8 @@ int ultimatecla = -1; //0 == espaco, 1 == left, 2 == right, 3 == baixo
 
 void loop_peca_caindo(int value)
 {
-    if(estadoJogo==1)
+
+    if(estadoJogo==1) //moviumento das peças
     {
         jogoComPecaCaindo = jogo;
 
@@ -103,6 +104,7 @@ void RenderScene(void)
         glEnd();
 
         
+        //Desenha as peças do jogo
         for(int i=0;i<alturaMaximaJogo;i++) {
 		    
 		    for(int j=0;j<larguraJogo;j++) {
@@ -110,6 +112,7 @@ void RenderScene(void)
                 char pos = jogoComPecaCaindo.get(j,alturaMaximaJogo-i-1);
                 if(pos != ' ')
                 {
+                    //contorno do quadrado
                     glPushMatrix();
                     glScalef(scale_x, scale_y, 0);
                     glColor3f (contorno_quadrado[0], contorno_quadrado[1], contorno_quadrado[2]);
@@ -121,6 +124,7 @@ void RenderScene(void)
                         glVertex2f(1,1);
                         glVertex2f(0,1);
                     glEnd();
+                    //quadrado
                     glColor3f (cor_quadrado[0], cor_quadrado[1], cor_quadrado[2]);
                     glBegin(GL_POLYGON);
                         glVertex2f(0,0);
@@ -131,7 +135,6 @@ void RenderScene(void)
                     glPopMatrix();
                     
                 }
-                //mvprintw(i, j+1, "%c",jogoComPecaCaindo.get(j,alturaMaximaJogo-i-1));
 		    }
 		    
         }
