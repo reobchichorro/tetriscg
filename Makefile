@@ -10,5 +10,7 @@ main.o:
 jogoTetris.o:
 	g++ -c jogoTetris.cpp
 
+compile: clean main.out
+
 clean:
 	rm -r -f *.o *.out

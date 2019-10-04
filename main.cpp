@@ -1,9 +1,10 @@
 #include <GL/glut.h>
-#include <iostream>
+// #include <iostream>
+#include <bits/stdc++.h>
 #include "Menu.cpp"
 #include "Tetris.h"
 
-//variáveis gllobais de janela
+//variáveis globais de janela
 
 GLfloat win=250, r, g, b;
 GLint view_w, view_h;
@@ -33,8 +34,37 @@ void Desenha(void)
     else //desenha o jogo atual
     {
         //desenha o background do jogo
-        glColor3f (0.3, 0.3, 0.3);
+        glColor3f (1.0, 0.3, 0.3);
         
+        glBegin(GL_POLYGON);
+            glVertex2f(0.0,0.0);
+            glVertex2f(2.0,0.0);
+            glVertex2f(2.0,2.0);
+            glVertex2f(0.0,2.0);
+        glEnd();
+    }
+
+    glutSwapBuffers();
+    glFlush();
+}
+
+// Funcao para glutTimerFunc
+void Desenha2(int value)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+  	glLoadIdentity();
+    float c = (float)value/20;
+    if(c>1.0) return;
+    if(estadoJogo == 0) //desenha o menu
+    {
+
+    }
+    else //desenha o jogo atual
+    {
+        //desenha o background do jogo
+        glColor3f (c, c, 1.0-c);
+        std::cerr << c << "\n";
         glBegin(GL_POLYGON);
             glVertex2f(0.0,0.0);
             glVertex2f(1.0,0.0);
@@ -45,6 +75,7 @@ void Desenha(void)
 
     glutSwapBuffers();
     glFlush();
+    glutTimerFunc(500,Desenha2,value+1);
 }
 
 
@@ -136,17 +167,17 @@ int main(int argc, char** argv)
 	alturaPecaAtual = alturaMaximaJogo;
 	rotacaoPecaAtual = 0;
     
-    //inicialização openGL
+    // inicialização openGL
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);     
     glutInitWindowSize(400,600);
     //glutInitWindowPosition(200,100);
     glutCreateWindow("Tetris");
-    //glutReshapeFunc(AlteraTamanhoJanela);
+    // glutReshapeFunc(AlteraTamanhoJanela);
     glutDisplayFunc(Desenha);
     glutKeyboardFunc(teclado);
     glutSpecialFunc(teclas_especiais);
-
+    Desenha2(0);
     init();
     glutMainLoop();
 }
