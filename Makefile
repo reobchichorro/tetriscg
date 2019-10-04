@@ -4,7 +4,7 @@ main.out: Tetris.o main.o
 Tetris.o:
 	g++ -c Tetris.cpp
 
-main.o:
+main.o: main.cpp
 	g++ -c main.cpp
 
 jogoTetris.o:
