@@ -3,29 +3,48 @@
 #include "Menu.cpp"
 #include "Tetris.h"
 
-//variáveis gllobais
-int estadoJogo = 0; //0 = Menu ; 1 = Jogo
-GLfloat win, r, g, b;
+//variáveis gllobais de janela
+
+GLfloat win=250, r, g, b;
 GLint view_w, view_h;
+
+//variaveis do jogo
+int estadoJogo = 1; //0 = Menu ; 1 = Jogo; 2 = Perdeu;
+const int possiveisRotacoes[] = {0,90,180,270};
+const int larguraJogo = 16;
+const int alturaMaximaJogo = 20;
+Tetris jogo(larguraJogo);
+Tetris jogoComPecaCaindo(larguraJogo);
+int alturaPecaAtual=alturaMaximaJogo;
+char idPecaAtual;
+int posicaoPecaAtual,rotacaoPecaAtual;
 
 // Funcao callback chamada para fazer o desenho
 void Desenha(void)
 {
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-                
+    
     glClear(GL_COLOR_BUFFER_BIT);
-
+    glMatrixMode(GL_MODELVIEW);
+  	glLoadIdentity();
     if(estadoJogo == 0) //desenha o menu
     {
 
     }
     else //desenha o jogo atual
     {
-
+        //desenha o background do jogo
+        glColor3f (0.3, 0.3, 0.3);
+        
+        glBegin(GL_POLYGON);
+            glVertex2f(0.0,0.0);
+            glVertex2f(1.0,0.0);
+            glVertex2f(1.0,1.0);
+            glVertex2f(0.0,1.0);
+        glEnd();
     }
 
     glutSwapBuffers();
+    glFlush();
 }
 
 
@@ -33,8 +52,8 @@ void Desenha(void)
 void init (void)
 {   
     // Define a cor de fundo da janela de visualiza��o como branca
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glFlush();
+    glClearColor(1.0, 1.0, 1.0, 0.0);
+    win = 1000;
 }
 
 // Fun��o callback chamada quando o tamanho da janela � alterado 
@@ -47,8 +66,11 @@ void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 
     // Inicializa o sistema de coordenadas
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D (-win, win, -win, win);
+  	glLoadIdentity();
+
+  	// Estabelece volume de visualiza��o 
+    // (esquerda, direita, inferior, superior)
+  	gluOrtho2D (-win, win, -win, win);
 }
 
 void teclado(unsigned char key, int x, int y)
@@ -63,7 +85,7 @@ void teclado(unsigned char key, int x, int y)
 
 }
 
-void teclas_especiais(unsigned char key, int x, int y)
+void teclas_especiais(int key, int x, int y)
 {
     if(estadoJogo == 0)
     {
@@ -108,15 +130,22 @@ void teclas_especiais(unsigned char key, int x, int y)
 // Programa Principal 
 int main(int argc, char** argv)
 {
+    //inicialização das variaveis do jogo
+    idPecaAtual = "IJLOSTZ"[rand()%7];
+	posicaoPecaAtual = larguraJogo/2-2;
+	alturaPecaAtual = alturaMaximaJogo;
+	rotacaoPecaAtual = 0;
+    
+    //inicialização openGL
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);     
     glutInitWindowSize(400,600);
-    glutInitWindowPosition(200,100);
+    //glutInitWindowPosition(200,100);
     glutCreateWindow("Tetris");
-    glutReshapeFunc(AlteraTamanhoJanela);
+    //glutReshapeFunc(AlteraTamanhoJanela);
     glutDisplayFunc(Desenha);
-    glutKeyboardFunc(HandleKeyboard);
-    glutSpecialFunc(SpecialKeys);
+    glutKeyboardFunc(teclado);
+    glutSpecialFunc(teclas_especiais);
 
     init();
     glutMainLoop();
