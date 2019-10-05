@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 #include "Menu.cpp"
 #include "Tetris.h"
+#include "INF390.h"
 #include <iostream>
 using namespace std;
 
@@ -35,8 +36,20 @@ int ultimatecla = -1; //0 == espaco, 1 == left, 2 == right, 3 == baixo
 
 void loop_peca_caindo(int value)
 {
+    if(estadoJogo == 0)
+    {
+        //inicia o jogo
+        jogo = Tetris(larguraJogo);
+        jogoComPecaCaindo = Tetris(larguraJogo);
+        alturaPecaAtual = alturaMaximaJogo;
+        ultimatecla = -1;
+        idPecaAtual = "IJLOSTZ"[rand()%7];
+        posicaoPecaAtual = larguraJogo/2-2;
+        alturaPecaAtual = alturaMaximaJogo;
+        rotacaoPecaAtual = 0;
 
-    if(estadoJogo==1) //moviumento das peças
+    }
+    else if(estadoJogo==1) //moviumento das peças
     {
         jogoComPecaCaindo = jogo;
 
@@ -64,9 +77,14 @@ void loop_peca_caindo(int value)
         }
         else {
             //adiciona a peca a posicao onde ela ficara fixada
-            jogo.adicionaForma(posicaoPecaAtual,alturaPecaAtual,idPecaAtual, possiveisRotacoes[rotacaoPecaAtual]);
-            jogoComPecaCaindo = jogo;
-
+            if(jogo.adicionaForma(posicaoPecaAtual,alturaPecaAtual,idPecaAtual, possiveisRotacoes[rotacaoPecaAtual]))
+                jogoComPecaCaindo = jogo;
+            else //não é possível adicionar mais peças, GAME OVER
+            {
+                estadoJogo=2;
+                glutPostRedisplay();
+                return;
+            }
             //sorteia uma nova peca, define a altura como sendo o topo da tela, etc...
             idPecaAtual = "IJLOSTZ"[rand()%7];
             posicaoPecaAtual = larguraJogo/2-2;
@@ -79,7 +97,20 @@ void loop_peca_caindo(int value)
     
     
     glutPostRedisplay();
-    glutTimerFunc(300,loop_peca_caindo, 1);
+    glutTimerFunc(velocidade,loop_peca_caindo, 1);
+}
+
+void DesenhaTexto(char *string) 
+{  
+  	
+        // Posi��o no universo onde o texto ser� colocado          
+        //glRasterPos2f(0,alturaMaximaJogo/2);
+        //glScalef(4,4,0);
+         
+        // Exibe caracter a caracter
+        while(*string)
+             glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,*string++); 
+	
 }
 
 // Chamada para fazer o desenho
@@ -87,11 +118,12 @@ void RenderScene(void)
 {
     // Limpa a janela
     glClear(GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    
     
     if(estadoJogo == 1)
     {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
         
         // Desenha o back ground do jogo
         glScalef(scale_x, scale_y, 0);
@@ -140,6 +172,17 @@ void RenderScene(void)
         }
 
     }
+    else if(estadoJogo == 2)
+    {
+        //tela de GAME OVER
+        glPushMatrix();
+        glLoadIdentity();
+        glColor3f (1.0, 0.0, 0.0);
+        glTranslatef(-0.5,alturaMaximaJogo/2,0);
+        glScalef(0.01,0.01,0);
+        INF390::texto("GAME OVER",1,1,1,1);
+        glPopMatrix();            
+    }
     
     //Desenha as peças do jogo
     glutSwapBuffers();
@@ -167,7 +210,11 @@ void ChangeSize(GLsizei w, GLsizei h)
 
   	// Estabelece volume de visualiza��o 
     // (esquerda, direita, inferior, superior)
-    gluOrtho2D ((-larguraJogo/2), (3*larguraJogo/2), 0, alturaMaximaJogo);
+    if(estadoJogo == 1 || estadoJogo==2)
+    {
+        gluOrtho2D ((-larguraJogo/2), (3*larguraJogo/2), 0, alturaMaximaJogo);
+    }
+    
 
   	glMatrixMode(GL_MODELVIEW);
   	glLoadIdentity();
@@ -260,7 +307,7 @@ int main(int argc, char** argv)
 	glutMouseFunc(HandleMouse);
 	glutSpecialFunc(SpecialKeys);
 	init();
-    glutTimerFunc(300,loop_peca_caindo, 1);
+    glutTimerFunc(velocidade,loop_peca_caindo, 1);
     glutMainLoop();
 		
 	return 0;
