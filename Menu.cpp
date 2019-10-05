@@ -66,6 +66,31 @@ void DesenhaRet(void) {
         glVertex2i(dir, cima);
         glVertex2i(dir, baixo);
     glEnd();
+
+    std::string menutxt;
+    glColor3f(1.0f,0.0f,0.0f);
+
+    GLint offset = 4;
+
+    for(int i=0; i<4; i++) {
+        if(i==0) {
+            menutxt = "VELOCIDADE:";
+        } else if(i==1) {
+            menutxt = "TAMANHO:";
+        } else if(i==2) {
+            menutxt = "CORES:";
+        } else {
+            menutxt = "MODO:";
+        }
+        baixo = (2-i)*(hdiff+h);
+        auto it = menutxt.begin();
+        glPushMatrix();
+            glRasterPos2f(-40.0,baixo-offset);
+            // std::cerr << -40.0 << " " << 2*hdiff+2*h << std::endl;
+            while(it != menutxt.end())
+                glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,*it++);
+        glPopMatrix();
+    }
 }
 
 //funções de tratamento das opções do menu deverão estar aqui
@@ -153,7 +178,7 @@ void Inicializa (void)
 
 // Fun��o callback chamada sempre que o mouse � movimentado
 // sobre a janela GLUT com um bot�o pressionado
-void MoveMouseBotaoPressionado(int button, int state, int x, int y)
+void MouseBotaoPressionado(int button, int state, int x, int y)
 {
     if(button != GLUT_LEFT_BUTTON) return;
     texto = "Botao pressionado (" + std::to_string(x) + "," + std::to_string(y) + ")";
@@ -178,22 +203,12 @@ void MoveMouseBotaoPressionado(int button, int state, int x, int y)
                 if(i==5)
                     exit(0);
                 // else if(i==0)
-                    //iniciar jogo
+                    //initgame
                 else {
                     omenu.linha = i;
                     omenu.coluna[i] = j;
                 }
             }
-            // if(omenu.coluna[i]==j && (i > 0 && i < 5))
-            //     glColor3f(0.0,0.0,1.0);
-            // else
-            //     glColor3f(0.0,1.0,0.0);
-            // glBegin(GL_POLYGON);
-            //     glVertex2i(esq, baixo);
-            //     glVertex2i(esq, cima);
-            //     glVertex2i(dir, cima);
-            //     glVertex2i(dir, baixo);
-            // glEnd();
         }
     }
 
@@ -236,7 +251,7 @@ int main(int argc, char** argv)
         glutCreateWindow("Exemplo de Menu");
         glutDisplayFunc(Desenha);
         glutReshapeFunc(ChangeSize);
-        glutMouseFunc(MoveMouseBotaoPressionado);
+        glutMouseFunc(MouseBotaoPressionado);
         glutPassiveMotionFunc(MoveMouse);
         glutSpecialFunc(opcao_menu);
         glutKeyboardFunc(opcao_menu2);
