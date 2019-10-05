@@ -70,7 +70,7 @@ void DesenhaRet(void) {
     std::string menutxt;
     glColor3f(1.0f,0.0f,0.0f);
 
-    GLint offset = 4;
+    GLint offset = 4, xoffset=20;
 
     for(int i=0; i<4; i++) {
         if(i==0) {
@@ -90,6 +90,53 @@ void DesenhaRet(void) {
             while(it != menutxt.end())
                 glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,*it++);
         glPopMatrix();
+    }
+
+    for(int i=0; i<6; i++) {
+        baixo = (hdiff+h)/2;
+        baixo += (2-i)*(hdiff+h);
+
+        for(int j=0; j<omenu.maxMenu[i]; j++) {
+            if(i==0) {
+                menutxt = "INICIAR";
+            } else if(i==1) {
+                if(j==0)
+                    menutxt = "NORMAL";
+                else if(j==1)
+                    menutxt = "RAPIDO";
+                else
+                    menutxt = "TURBO";
+            } else if(i==2) {
+                if(j==0)
+                    menutxt = "20x10";
+                else if(j==1)
+                    menutxt = "30x15"; 
+                else
+                    menutxt = "50x25";
+            } else if(i==3) {
+                menutxt = "Cores" + std::to_string(j+1);
+            } else if(i==4) {
+                if(j==0)
+                    menutxt = "NORMAL";
+                else
+                    menutxt = "BEBADO";
+            } else {
+                menutxt = "SAIR";
+            }
+            if(i > 0 && i < 4)
+                esq = -1*ll3 + j*(ldiff+l);
+            else if(i == 4)
+                esq = -1*ll2 + j*(ldiff+l);
+            else
+                esq = -1*l/2;
+            auto it = menutxt.begin();
+            glPushMatrix();
+                glRasterPos2f(esq+xoffset,baixo-offset);
+                // std::cerr << -40.0 << " " << 2*hdiff+2*h << std::endl;
+                while(it != menutxt.end())
+                    glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,*it++);
+            glPopMatrix();
+        }
     }
 }
 
