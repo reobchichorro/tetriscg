@@ -15,6 +15,7 @@ GLint ll3 = (3*l + 2*ldiff)/2, ll2 = (2*l + ldiff)/2;
 struct Menu {
     int linha=0;
     int coluna[6] = {0,0,0,0,0,0};
+    int select[6] = {0,0,0,0,0,0};
     const int maxMenu[6] = {1,3,3,3,2,1};
 };
 
@@ -37,7 +38,7 @@ void DesenhaRet(void) {
             } else {
                 dir = l/2; esq = -1*dir;
             }
-            if(omenu.coluna[i]==j && (i > 0 && i < 5))
+            if(omenu.select[i]==j && (i > 0 && i < 5))
                 glColor3f(0.0,0.0,1.0);
             else
                 glColor3f(0.0,1.0,0.0);
@@ -155,11 +156,13 @@ void opcao_menu(int opcao, int x, int y) {
                 omenu.coluna[omenu.linha] = 0;
         break;
         case GLUT_KEY_UP:
+            omenu.coluna[omenu.linha] = omenu.select[omenu.linha];
             omenu.linha--;
             if(omenu.linha<0)
                 omenu.linha=5;
         break;
         case GLUT_KEY_DOWN:
+            omenu.coluna[omenu.linha] = omenu.select[omenu.linha];
             omenu.linha++;
             if(omenu.linha>=6)
                 omenu.linha=0;
@@ -176,6 +179,8 @@ void opcao_menu2(unsigned char opcao, int x, int y) {
                 exit(0);
             // else if(omenu.linha==0)
                 //initgame
+            else
+                omenu.select[omenu.linha] = omenu.coluna[omenu.linha];
         break;
     }
     glutPostRedisplay();
@@ -253,6 +258,7 @@ void MouseBotaoPressionado(int button, int state, int x, int y)
                     //initgame
                 else {
                     omenu.linha = i;
+                    omenu.select[i] = j;
                     omenu.coluna[i] = j;
                 }
             }
