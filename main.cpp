@@ -490,7 +490,7 @@ void HandleKeyboard(unsigned char key, int x, int y)
 // Callback para gerenciar eventos do mouse
 void HandleMouse(int button, int state, int x, int y)
 {
-    if(estadoJogo == 1 || estadoJogo == 2)
+    if(estadoJogo == 0)
     {
         if(button != GLUT_LEFT_BUTTON) return;
         //texto = "Botao pressionado (" + std::to_string(x) + "," + std::to_string(y) + ")";
@@ -514,20 +514,124 @@ void HandleMouse(int button, int state, int x, int y)
                     found = true;
                     if(i==5)
                         exit(0);
-                    // else if(i==0)
-                        //initgame
+                    else if(i==0)
+                        estadoJogo = 1;
                     else {
                         omenu.linha = i;
                         omenu.select[i] = j;
                         omenu.coluna[i] = j;
+                        if(omenu.linha==1) // velocidade
+                        {
+                            if(omenu.select[omenu.linha] == 0)
+                                velocidade = 100;
+                            else if(omenu.select[omenu.linha] == 1)
+                                velocidade = 50;
+                            else
+                                velocidade = 30;
+                        }
+                        else if(omenu.linha==2) //tamanho do jogo
+                        {
+                            if(omenu.select[omenu.linha] == 0)
+                            {
+                                alturaMaximaJogo = 20;
+                                larguraJogo = 10;
+                            }
+                            else if(omenu.select[omenu.linha] == 1)
+                            {
+                                alturaMaximaJogo = 30;
+                                larguraJogo = 15;
+                            }
+                            else
+                            {
+                                alturaMaximaJogo = 50;
+                                larguraJogo = 25;
+                            }
+                        }
+                        else if(omenu.linha == 3) //cores
+                        {
+                            if(omenu.select[omenu.linha] == 0)
+                            {
+                                cor_background[0] = 0.3;
+                                cor_background[1] = 0.3;
+                                cor_background[2] = 0.3;
+                                
+                                cor_quadrado[0] = 1.0;
+                                cor_quadrado[1] = 0.3;
+                                cor_quadrado[2] = 0.3;
+                                
+                                contorno_quadrado[0] = 1.0;
+                                contorno_quadrado[1] = 1.0;
+                                contorno_quadrado[2] = 1.0;
+                            }
+                            else if(omenu.select[omenu.linha] == 1)
+                            {
+                                cor_background[0] = 0.0;
+                                cor_background[1] = 0.59;
+                                cor_background[2] = 0.3;
+                                
+                                cor_quadrado[0] = 0.3;
+                                cor_quadrado[1] = 0.3;
+                                cor_quadrado[2] = 0.6;
+                                
+                                contorno_quadrado[0] = 0.0;
+                                contorno_quadrado[1] = 0.0;
+                                contorno_quadrado[2] = 0.0;
+                            }
+                            else
+                            {
+                                cor_background[0] = 0.275;
+                                cor_background[1] = 0.153;
+                                cor_background[2] = 0.349;
+                                
+                                cor_quadrado[0] = 0.831;
+                                cor_quadrado[1] = 0.686;
+                                cor_quadrado[2] = 0.216;
+                                
+                                contorno_quadrado[0] = 0.0;
+                                contorno_quadrado[1] = 0.0;
+                                contorno_quadrado[2] = 0.0;
+                            }
+                        }
+                        else if(omenu.linha == 4)
+                        {
+                            if(omenu.select[omenu.linha] == 0)
+                                bebado = false;
+                            else
+                                bebado = true;
+                        }
                     }
                 }
             }
         }
-
     }
-	
-	
+}
+
+void MoveMouse(int x, int y)
+{
+    if(estadoJogo !=0) return;
+    x -= 250; y = 250 - y;
+
+    GLint baixo, cima;
+    GLint esq, dir;
+    bool found = false;
+    for(int i=0; i<6 && !found; i++) {
+        baixo = hdiff/2 + (2-i)*(hdiff+h), cima = baixo + h;
+        for(int j=0; j<omenu.maxMenu[i] && !found; j++) {
+            if(i > 0 && i < 4) {
+                esq = -1*ll3 + j*(ldiff+l); dir = esq + l;
+            } else if(i == 4) {
+                esq = -1*ll2 + j*(ldiff+l); dir = esq + l;
+            } else {
+                dir = l/2; esq = -1*dir;
+            }
+            if(esq <= x && x <= dir && baixo <= y && y <= cima) {
+                found = true;
+                omenu.linha = i;
+                omenu.coluna[i] = j;
+            }
+        }
+    }
+    glutPostRedisplay();
 }
 
 
@@ -601,6 +705,7 @@ int main(int argc, char** argv)
         glutReshapeFunc(ChangeSize);
         glutKeyboardFunc(HandleKeyboard);
         glutMouseFunc(HandleMouse);
+        glutPassiveMotionFunc(MoveMouse);
         glutSpecialFunc(SpecialKeys);
         init();
     glutTimerFunc(velocidade,loop_peca_caindo, 1);
